@@ -72,6 +72,6 @@ app.post('/register', async (req, res) => {
 })
 
 app.use(routes)
-app.listen(80, () => {
-    console.log('Running on Port 80')
+app.listen(8080, () => {
+    console.log('Running on Port 8080')
 })
