@@ -7,6 +7,7 @@ import {upload, faceapi as faceApi, canv as canvas} from '../utils/imagesProcess
 const router = express.Router()
 const db = fb.firestore()
 const tupp = db.collection('tm_tupperware')
+const user = db.collection('tm_user')
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,9 +32,40 @@ router.get('/tupperware', async (req, res) => {
             })
 })
 
+router.get('/user', async (req, res) =>{
+    const listUser = []
+    const userRef = await user.get()
+    userRef.forEach(doc => {
+        let user = doc.data()
+        user.id = doc.id
+        listUser.push(user)
+    })
+    res.json({
+        "data":listUser
+    })
+
+})
+
+router.post('/user', async (req, res) =>{
+    const userBody = req.body
+    const nama = userBody.nama
+    const telp = userBody.telp
+    if(nama && telp){
+        await user.add({
+            nama,
+            telp
+        }).then(resp => {
+            res.json({success:true, id:resp.id, nama, telp})
+        }).catch(err =>{
+            console.log(err)
+            res.json({success:false, errorMessage:err})
+        })
+    }
+    res.json({success:false, errorMessage:"Variable not valid"})
+})
 
 const loadLabeledImages = () =>  {
-    const labels = ['Black Widow', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor', 'Tony Stark']
+    const labels = ['Black Widow', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor', 'Tony Stark', 'Ibu']
     return Promise.all(
         labels.map(async label => {
             const desc = []
@@ -53,9 +85,9 @@ router.post('/v1/image', upload.single('file'), async (req, res) => {
     const labeledFaceDescriptors = await loadLabeledImages()
     const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.6)
     const singleResult = await faceApi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
-    let bestMatch
+    let bestMatch = null
     if (singleResult) {
-        bestMatch = faceMatcher.findBestMatch(singleResult.descriptor)
+        bestMatch = await faceMatcher.findBestMatch(singleResult.descriptor)
       }
     res.json({
         "data":bestMatch
