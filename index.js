@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import fb from './config/firebase.js'
 import cors from 'cors'
 import routes from './routes/index.js'
+import loadLabeledImages from "./utils/labeledImage.js"
 const app = Express()
 const router = Express.Router()
 env.config()
@@ -13,6 +14,7 @@ app.use(cors())
 const dbUser = db.collection('users')
 import bcrypt from 'bcrypt'
 const saltRounds = 10
+global.labeledImagesFix = loadLabeledImages()
 app.use(Express.json())
 //face api library
 // const faceApi = require('face-api.js')

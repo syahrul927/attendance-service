@@ -64,25 +64,25 @@ router.post('/user', async (req, res) =>{
     res.json({success:false, errorMessage:"Variable not valid"})
 })
 
-const loadLabeledImages = () =>  {
-    const labels = ['Black Widow', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor', 'Tony Stark', 'Ibu']
-    return Promise.all(
-        labels.map(async label => {
-            const desc = []
-            for (let i = 1; i <= 2; i++) {
-                const img = await canvas.loadImage(path.join(__dirname,`../labeled_images/${label}/${i}.jpg`))
-                const detections = await faceApi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-                desc.push(detections.descriptor)
-              }
+// const loadLabeledImages = () =>  {
+//     const labels = ['Black Widow', 'Captain America', 'Captain Marvel', 'Hawkeye', 'Jim Rhodes', 'Thor', 'Tony Stark', 'Ibu']
+//     return Promise.all(
+//         labels.map(async label => {
+//             const desc = []
+//             for (let i = 1; i <= 2; i++) {
+//                 const img = await canvas.loadImage(path.join(__dirname,`../labeled_images/${label}/${i}.jpg`))
+//                 const detections = await faceApi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+//                 desc.push(detections.descriptor)
+//               }
         
-              return new faceApi.LabeledFaceDescriptors(label, desc)
-        })
-    )
-}
+//               return new faceApi.LabeledFaceDescriptors(label, desc)
+//         })
+//     )
+// }
 router.post('/v1/image', upload.single('file'), async (req, res) => {
     // Load the face detection models   
     const image = await canvas.loadImage(path.join(__dirname,`../images/${req.file.filename}`))
-    const labeledFaceDescriptors = await loadLabeledImages()
+    const labeledFaceDescriptors = await labeledImagesFix
     const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.6)
     const singleResult = await faceApi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
     let bestMatch = null
