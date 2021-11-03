@@ -19,6 +19,12 @@ app.use(Express.json())
 //face api library
 // const faceApi = require('face-api.js')
 
+app.get('/', (req,res) => {
+res.json({
+    "status":200,
+    "info":"OK"
+})
+})
 app.post('/login', async (req, res) => {
     console.log(`login : ${req.body}`)
     const doc = await dbUser.doc(req.body.username).get()
