@@ -6,7 +6,7 @@ import bodyParser from 'body-parser'
 import {authenticateToken} from '../middleware/authToken.js'
 import imageRoute from './imageRoute.js'   
 router.use(bodyParser.json())
-router.use(authenticateToken)
+// router.use(authenticateToken)
 router.use(imageRoute)
 
 
