@@ -6,7 +6,7 @@ import {authenticateToken} from '../middleware/authToken.js'
 import imageRoute from './imageRoute.js'   
 import absenRoute from './absenRoute.js'
 router.use(absenRoute)
-router.use(authenticateToken)
+// router.use(authenticateToken)
 router.use(imageRoute)
 
 
