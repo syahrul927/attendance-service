@@ -4,18 +4,18 @@ import jwt from 'jsonwebtoken'
 import fb from './config/firebase.js'
 import cors from 'cors'
 import routes from './routes/index.js'
-import loadLabeledImages from "./utils/labeledImage.js"
+import loadLabeledImages, {loadListUser} from "./utils/labeledImage.js"
 const app = Express()
+app.use(cors())
 const router = Express.Router()
 env.config()
 const db = fb.firestore()
 
-app.use(cors())
 const dbUser = db.collection('users')
 import bcrypt from 'bcrypt'
 const saltRounds = 10
-global.labeledImagesFix = loadLabeledImages()
 app.use(Express.json())
+app.use(Express.urlencoded({extended:true}))
 //face api library
 // const faceApi = require('face-api.js')
 
@@ -80,6 +80,9 @@ app.post('/register', async (req, res) => {
 })
 
 app.use(routes)
+
+const label = await loadListUser()
+global.labeledImagesFix = loadLabeledImages(label)
 app.listen(process.env.PORT || 3000, () => {
     console.log(`Sudah Running Mas di port ${process.env.PORT}`)
 })
