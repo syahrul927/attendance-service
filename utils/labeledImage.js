@@ -5,7 +5,7 @@ import fb from '../config/firebase.js'
 import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const baseUrl = 'https://attendance-dashboardku.herokuapp.com'
+const baseUrl = 'https://attendance-serviceku.herokuapp.com'
 
 const db = fb.firestore()
 const userDb = db.collection('tm_user')
