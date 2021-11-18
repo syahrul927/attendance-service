@@ -72,7 +72,7 @@ export const validateImage = async (labels = []) => {
     let isValidate = true
     for (let i = 0; i < labels.length; i++) {
         const item = labels[i];
-        console.log('load image')
+        console.log(`load image ${item}`)
         const img = await canvas.loadImage(`${baseUrl}/s3/image/${item}`)
         const description = await faceApi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
         if (!description) {
