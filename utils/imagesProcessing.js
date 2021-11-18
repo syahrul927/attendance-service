@@ -30,6 +30,7 @@ export const uploadS3 = (file) => {
     Body: fileStream,
     Key: file.filename
   }
+  console.log('upload to aws server')
   return s3.upload(uploadParams).promise()
 }
 

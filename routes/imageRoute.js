@@ -37,6 +37,7 @@ router.post('/user', noneUpload.array('images', 2),async (req, res) => {
     const telp = userBody.telp
     const images = []
     const files = req.files
+    console.log('lengt file'+req.files.length)
     if(files.length){
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
