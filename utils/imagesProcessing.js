@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url'
 import env from 'dotenv'
 env.config()
 
-import S3 from 'aws-sdk'
+import S3 from 'aws-sdk/clients/s3'
 const bucket = process.env.AWS_BUCKET_NAME
 const region = process.env.AWS_BUCKET_REGION
 const accessKeyId = process.env.AWS_ACCESS_KEY
