@@ -78,7 +78,8 @@ app.post('/register', async (req, res) => {
 })
 
 app.use(routes)
-listener()
 app.listen(process.env.PORT || 3000, () => {
     console.log(`Sudah Running Mas di port ${process.env.PORT}`)
 })
+
+listener()

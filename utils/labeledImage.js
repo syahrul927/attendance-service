@@ -40,6 +40,7 @@ const loadLabeledImages = (listUser = []) => {
             if (label.images && label.images.length) {
                 const desc = []
                 for (let i = 1; i <= label.images.length; i++) {
+                    console.log(`${baseUrl}/s3/image/${label.images[i]}`)
                     const img = await canvas.loadImage(`${baseUrl}/s3/image/${label.images[i]}`)
                     const description = await faceApi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
                     if (description) {
