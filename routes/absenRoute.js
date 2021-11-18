@@ -62,24 +62,10 @@ router.post('/absen/test', noneUpload.single('image'), async (req, res) => {
     res.send('OK')
 })
 
-router.get('/absen/get/:key', async (req, res) => {
-    console.log('login slur')
+router.get('/s3/image/:key', async (req, res) => {
     const key = req.params.key
     const stream = await downloadS3(key)
     res.set('Content-Type', 'image/png')
     stream.pipe(res);
-
-    // stream.on('open', function () {
-    //     console.log('open cuy')
-    //     res.set('Content-Type', 'image/png');
-    // })
-    // stream.on('error', function () {
-    //     console.log('error cuy')
-    //     res.set('Content-Type', 'text/plain');
-    //     res.status(404).end('Not found');
-    // })
-    // res.send('default euy')
-
-
 })
 export default router

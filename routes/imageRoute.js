@@ -5,7 +5,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
 import mime from 'mime'
-import { faceapi as faceApi, canv as canvas, imageUpload, noneUpload } from '../utils/imagesProcessing.js'
+import { faceapi as faceApi, canv as canvas, imageUpload, noneUpload, uploadS3 } from '../utils/imagesProcessing.js'
 import { validateImage } from '../utils/labeledImage.js'
 
 const router = express.Router()
@@ -83,22 +83,24 @@ router.post('/user/update', imageUpload(imagePath.DATA_SET).array('images', 2), 
 
 
 })
-router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (req, res) => {
+// router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (req, res) => {
+router.post('/user', noneUpload.array('images', 2),async (req, res) => {
     const userBody = req.body
     const nama = userBody.nama
     const telp = userBody.telp
     const images = []
-    if (req.files.length) {
-        const files = req.files
-        files.forEach(item => {
-            if (item) {
-                images.push(item.path)
-            }
-        })
+    const files = req.files
+    if(files.length){
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const res = await uploadS3(file)
+            images.push(res.Key)
+        }
+        
     }
     const valid = await validateImage(images)
     if (!valid) {
-        await fs.rmSync(`./labeled_images/${userBody.code}`, { recursive: true, force: true });
+        // await fs.rmSync(`./labeled_images/${userBody.code}`, { recursive: true, force: true });
         res.json({ success: false, errorMessage: "Wajah Tidak terdeteksi pada gambar" })
     } else {
         if (nama && telp) {
@@ -110,12 +112,12 @@ router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (
                 modifiedTm: new Date()
             }).then(async resp => {
                 //rename folder by id
-                fs.rename(`./labeled_images/${userBody.code}`, `./labeled_images/${resp.id}`, err => {
-                    if (err) {
-                        console.log(err)
-                    }
-                })
-                await user.doc(resp.id).update({ images: [`./labeled_images/${resp.id}/1.png`, `./labeled_images/${resp.id}/2.png`] })
+                // fs.rename(`./labeled_images/${userBody.code}`, `./labeled_images/${resp.id}`, err => {
+                //     if (err) {
+                //         console.log(err)
+                //     }
+                // })
+                // await user.doc(resp.id).update({ images: [`./labeled_images/${resp.id}/1.png`, `./labeled_images/${resp.id}/2.png`] })
                 res.json({ success: true, obj: {} })
             }).catch(err => {
                 console.log(err)
