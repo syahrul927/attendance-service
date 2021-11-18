@@ -67,6 +67,9 @@ router.post('/absen/test', noneUpload.single('image'), async (req, res) => {
 router.get('/s3/image/:key', async (req, res) => {
     const key = req.params.key
     const stream = await downloadS3(key)
+    stream.on('error', () =>{
+        return res.send(404)
+    })
     res.set('Content-Type', 'image/png')
     stream.pipe(res);
 })
