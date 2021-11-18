@@ -4,7 +4,7 @@ import imagePath from '../constanta/pathImageConst.js'
 import path from 'path'
 const db = fb.firestore()
 import { fileURLToPath } from 'url'
-import {faceapi as faceApi, canv as canvas, imageUpload} from '../utils/imagesProcessing.js'
+import {faceapi as faceApi, canv as canvas, imageUpload, noneUpload, uploadS3} from '../utils/imagesProcessing.js'
 const user = db.collection('tm_user')
 const router = express.Router()
 
@@ -55,4 +55,9 @@ router.post('/absen/check', imageUpload(imagePath.ABSEN).single('file'), async (
 
 })
 
+router.post('/absen/test', noneUpload.single('image'), async (req, res) => {
+    const file = req.file
+    const result  = await uploadS3(file)
+    res.send('OK')
+})
 export default router

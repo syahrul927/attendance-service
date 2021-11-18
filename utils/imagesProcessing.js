@@ -7,6 +7,29 @@ import fs from 'fs'
 import fetch from 'node-fetch'
 import { fileURLToPath } from 'url'
 
+import env from 'dotenv'
+env.config()
+
+import S3 from 'aws-sdk'
+const bucket = process.env.AWS_BUCKET_NAME
+const region = process.env.AWS_BUCKET_REGION
+const accessKeyId = process.env.AWS_ACCESS_KEY
+const secretAccessKey = process.env.AWS_SECRET_KEY
+const s3 = new S3({
+  region,
+  accessKeyId,
+  secretAccessKey
+})
+
+export const uploadS3 = (file) => {
+  const fileStream = fs.createReadStream(file.path),
+  const uploadParams = {
+    Bucket:bucket,
+    Body:fileStream,
+    Key:file.filename
+  }
+  return s3.upload(uploadParams).promise()
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,7 +67,7 @@ charactersLength));
  return result;
 }
 
-export const noneUpload = multer()
+export const noneUpload = multer({dest:'uploads/'})
 export const imageUpload = (prop = {}) =>{
   const uniqueCode = makeid(10)
   const storage = multer.diskStorage({
