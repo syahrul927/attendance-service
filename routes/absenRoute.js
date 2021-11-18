@@ -5,16 +5,18 @@ import path from 'path'
 const db = fb.firestore()
 import { fileURLToPath } from 'url'
 import { faceapi as faceApi, canv as canvas, imageUpload, noneUpload, uploadS3, downloadS3 } from '../utils/imagesProcessing.js'
+import { baseUrl } from "../utils/labeledImage.js"
 const user = db.collection('tm_user')
 const router = express.Router()
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-router.post('/absen/check', imageUpload(imagePath.ABSEN).single('file'), async (req, res) => {
+router.post('/absen/check', noneUpload.single('file'), async (req, res) => {
     const body = req.body
+    const result = await uploadS3(req.file)
     // Load the face detection models   
-    const image = await canvas.loadImage(path.join(__dirname, `../images/${req.file.filename}`))
+    const image = await canvas.loadImage(`${baseUrl}/s3/image/${result.Key}`)
     const labeledFaceDescriptors = await labeledImagesFix
     const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.5)
     const singleResult = await faceApi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()

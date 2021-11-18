@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 import fs from 'fs'
 import mime from 'mime'
 import { faceapi as faceApi, canv as canvas, imageUpload, noneUpload, uploadS3 } from '../utils/imagesProcessing.js'
-import { validateImage } from '../utils/labeledImage.js'
+import { baseUrl, validateImage } from '../utils/labeledImage.js'
 
 const router = express.Router()
 const db = fb.firestore()
@@ -37,7 +37,6 @@ router.post('/user', noneUpload.array('images', 2),async (req, res) => {
     const telp = userBody.telp
     const images = []
     const files = req.files
-    console.log('lengt file '+req.files.length)
     if(files.length){
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
@@ -130,10 +129,10 @@ router.post('/user/update', imageUpload(imagePath.DATA_SET).array('images', 2), 
 
 
 })
-router.post('/user/validate', imageUpload(imagePath.ABSEN).single('image'), async (req, res) => {
-    const body = req.body
+router.post('/user/validate', noneUpload.single('image'), async (req, res) => {
+    const result = await uploadS3(req.file)
     // Load the face detection models   
-    const image = await canvas.loadImage(path.join(__dirname,`../images/${req.file.filename}`))
+    const image = await canvas.loadImage(`${baseUrl}/s3/image/${result.Key}`)
     const labeledFaceDescriptors = await labeledImagesFix
     const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.5)
     const singleResult = await faceApi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()

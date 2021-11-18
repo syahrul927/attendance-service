@@ -5,12 +5,11 @@ import fb from '../config/firebase.js'
 import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const baseUrl = 'https://attendance-serviceku.herokuapp.com'
+export const baseUrl = 'https://attendance-serviceku.herokuapp.com'
 
 const db = fb.firestore()
 const userDb = db.collection('tm_user')
 import path from 'path'
-import { image } from '@tensorflow/tfjs-core';
 // const loadLabeledImages = (listUser = []) => {
 //     const labels = listUser
 //     // console.log(`data dari db :${loadLabeledImages()}`)    
