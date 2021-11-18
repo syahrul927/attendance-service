@@ -24,11 +24,64 @@ router.get('/user', async (req, res) =>{
         listUser.push(user)
     })
     res.json({
-        "data":listUser
+        "success":true,
+        "obj":listUser
     })
 
 })
+router.post('/user/update',imageUpload(imagePath.DATA_SET).array('images', 2), async (req, res) => {
+    const userBody = req.body
+    if(userBody.id){
+        let data = null
+        await user.doc(userBody.id).get()
+        .then(doc => {
+            if(doc.exists){
+                data = doc.ref
+            }
+        })
+        if(data){
+            const nama = userBody.nama
+            const telp = userBody.telp
+            const images = []
+            if(req.files.length){
+                const files = req.files
+                files.forEach(item => {
+                    if(item){
+                        images.push(item.path)
+                    }
+                })
+            }
+            if(nama && telp){
+                await data.update({
+                    nama,
+                    telp,
+                    images,
+                    modifiedTm:new Date()
+                }).then(async resp => {
+                    //rename folder by id
+                    await fs.rmSync(`./labeled_images/${userBody.id}`, { recursive: true, force: true });
+                    fs.rename(`./labeled_images/${userBody.code}`, `./labeled_images/${userBody.id}`, err => {
+                        if(err){
+                            console.log(err)
+                        }
+                    })
+                    res.json({success:true, id:resp.id, nama, telp})
+                }).catch(err =>{
+                    console.log(err)
+                    res.json({success:false, errorMessage:err})
+                })
+            }else{
+                res.status(400).json({success:false, errorMessage:"Variable not valid"})
+            }
+        }else{
+            res.status(403).json({success:false, errorMessage:"user not found"})
+        }
+    }else{
+        res.status(400).json({success:false, errorMessage:"Variable not valid"})
+    }
+    
 
+})
 router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (req, res) =>{
     const userBody = req.body
     const nama = userBody.nama
@@ -46,7 +99,9 @@ router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (
         await user.add({
             nama,
             telp,
-            images
+            images,
+            createdTm:new Date(),
+            modifiedTm:new Date()
         }).then(resp => {
             //rename folder by id
             fs.rename(`./labeled_images/${userBody.code}`, `./labeled_images/${resp.id}`, err => {
@@ -54,7 +109,7 @@ router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (
                     console.log(err)
                 }
             })
-            res.json({success:true, id:resp.id, nama, telp})
+            res.json({success:true, obj:{}})
         }).catch(err =>{
             console.log(err)
             res.json({success:false, errorMessage:err})
@@ -63,25 +118,7 @@ router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (
         res.json({success:false, errorMessage:"Variable not valid"})
     }
 })
-const saveImage = (images = [], id='') => {
-    images.forEach((image, idx) => {
-        const matches = image.match(/^data:([A-Za-z-+/]+);base64,(.+)$/)
-        const response = {}
-         
-        response.type = matches[1]
-        response.data = new Buffer(matches[2], 'base64')
-        const imageBuffer = decodedImg.data
-        const type = decodedImg.type
-        const extension = mime.extension(type)
-        const fileName =  `${idx+1}.${extension}`
-        try{
-              fs.writeFileSync(`.labeled_images/${id}/` + fileName, imageBuffer, 'utf8')
-           }
-        catch(err){
-           console.error(err)
-        }
-    })
-}
+
 router.post('/v1/image', imageUpload(imagePath.ABSEN).single('file'), async (req, res) => {
     // Load the face detection models   
     const image = await canvas.loadImage(path.join(__dirname,`../images/${req.file.filename}`))
@@ -96,4 +133,28 @@ router.post('/v1/image', imageUpload(imagePath.ABSEN).single('file'), async (req
         "data":bestMatch
     })
 })
+
+router.get('/absensi', async (req, res) => {
+    const list = []
+    await db.collection('tt_absensi')
+    .orderBy('createdDate', 'desc')
+    .get()
+    .then(docs => {
+        docs.forEach(doc =>{
+            if(doc.exists){
+                let data = doc.data()
+                data.createdDate = dateIndo(data.createdDate.toDate())
+                list.push(data)
+            }
+        })
+    })
+    res.json({success:true, obj:list})
+})
+const dateIndo = (date) =>{
+    if(date){
+        const str = `${new String(date.getHours()).padStart(2, 0)}:${new String(date.getMinutes()).padStart(2, 0)}:${new String(date.getSeconds()).padStart(2, 0)} ${new String(date.getDay()).padStart(2, 0)}/${new String(date.getMonth()+1).padStart(2, 0)}/${date.getFullYear()}`
+        return str
+    }
+    return date
+}
 export default router

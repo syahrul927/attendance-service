@@ -54,7 +54,7 @@ export const imageUpload = (prop = {}) =>{
       if (!fs.existsSync(filesDir)) {
             fs.mkdirSync(filesDir);
         }
-      callback(null, `${uniqueCode}/${file.originalname}`)
+      callback(null, `${uniqueCode}/${new String(file.originalname).replace(/\s/g, '')}`)
     }
   })
   const obj = {

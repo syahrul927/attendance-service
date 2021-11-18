@@ -12,6 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 router.post('/absen/check', imageUpload(imagePath.ABSEN).single('file'), async (req, res) => {
+    const body = req.body
     // Load the face detection models   
     const image = await canvas.loadImage(path.join(__dirname,`../images/${req.file.filename}`))
     const labeledFaceDescriptors = await labeledImagesFix
@@ -34,13 +35,19 @@ router.post('/absen/check', imageUpload(imagePath.ABSEN).single('file'), async (
         if(!data){
             res.status(401).json({
                 "success":false,
-                "info":"Wajah tidak dikenali harap lapor ke Admin !"
+                "errorMessage":"Wajah tidak dikenali harap lapor ke Admin !"
             })
         }else{
+            await db.collection('tt_absensi').add({
+                suhu:body.suhu,
+                path:req.file.path,
+                userId:data.id,
+                createdDate:new Date(),
+                nama:data.nama
+            })
             res.json({
-                "status":200,
-                "info":"OK",
-                "content":data
+                "success":true,
+                "obj":data
             })
         }
 
@@ -48,7 +55,4 @@ router.post('/absen/check', imageUpload(imagePath.ABSEN).single('file'), async (
 
 })
 
-const insertAbsen = () => {
-
-}
 export default router

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import fb from './config/firebase.js'
 import cors from 'cors'
 import routes from './routes/index.js'
-import loadLabeledImages, {loadListUser} from "./utils/labeledImage.js"
+import listener from './listener/index.js'
 const app = Express()
 app.use(cors())
 const router = Express.Router()
@@ -41,9 +41,8 @@ app.post('/login', async (req, res) => {
                     expiresIn: '10d'
                 })
                 res.json({
-                    "status": 200,
-                    "info": "OK",
-                    "accessToken": accessToken
+                    "success": true,
+                    "obj":{"accessToken": accessToken}
                 })
             }else{
                 res.sendStatus(403)
@@ -71,8 +70,7 @@ app.post('/register', async (req, res) => {
                 user.password = hash
                 await dbUser.doc(username).set(user)
                 res.json({
-                    "status": 200,
-                    "info": "OK"
+                    "success": true
                 })
             });
         });
@@ -80,9 +78,7 @@ app.post('/register', async (req, res) => {
 })
 
 app.use(routes)
-
-const label = await loadListUser()
-global.labeledImagesFix = loadLabeledImages(label)
+listener()
 app.listen(process.env.PORT || 3000, () => {
     console.log(`Sudah Running Mas di port ${process.env.PORT}`)
 })
