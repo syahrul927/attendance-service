@@ -36,8 +36,8 @@ export const uploadS3 = (file) => {
 
 export const downloadS3 = (key) => {
   const downloadParams = {
-    Key:key,
-    Bucket:bucket
+    Key: key,
+    Bucket: bucket
   }
   return s3.getObject(downloadParams).createReadStream()
 }
