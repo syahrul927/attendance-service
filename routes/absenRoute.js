@@ -16,7 +16,7 @@ router.post('/absen/check', imageUpload(imagePath.ABSEN).single('file'), async (
     // Load the face detection models   
     const image = await canvas.loadImage(path.join(__dirname,`../images/${req.file.filename}`))
     const labeledFaceDescriptors = await labeledImagesFix
-    const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.7)
+    const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.5)
     const singleResult = await faceApi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
     let bestMatch = null
     if (singleResult) {
