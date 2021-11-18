@@ -42,7 +42,7 @@ router.post('/absen/check', noneUpload.single('file'), async (req, res) => {
         } else {
             await db.collection('tt_absensi').add({
                 suhu: body.suhu,
-                path: req.file.path,
+                path: result.Key,
                 userId: data.id,
                 createdDate: new Date(),
                 nama: data.nama
