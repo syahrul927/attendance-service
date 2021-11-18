@@ -30,6 +30,52 @@ router.get('/user', async (req, res) => {
     })
 
 })
+// router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (req, res) => {
+router.post('/user', noneUpload.array('images', 2),async (req, res) => {
+    const userBody = req.body
+    const nama = userBody.nama
+    const telp = userBody.telp
+    const images = []
+    const files = req.files
+    if(files.length){
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const res = await uploadS3(file)
+            images.push(res.Key)
+        }
+        
+    }
+    const valid = await validateImage(images)
+    if (!valid) {
+        // await fs.rmSync(`./labeled_images/${userBody.code}`, { recursive: true, force: true });
+        res.json({ success: false, errorMessage: "Wajah Tidak terdeteksi pada gambar" })
+    } else {
+        if (nama && telp) {
+            await user.add({
+                nama,
+                telp,
+                images,
+                createdTm: new Date(),
+                modifiedTm: new Date()
+            }).then(async resp => {
+                //rename folder by id
+                // fs.rename(`./labeled_images/${userBody.code}`, `./labeled_images/${resp.id}`, err => {
+                //     if (err) {
+                //         console.log(err)
+                //     }
+                // })
+                // await user.doc(resp.id).update({ images: [`./labeled_images/${resp.id}/1.png`, `./labeled_images/${resp.id}/2.png`] })
+                res.json({ success: true, obj: {} })
+            }).catch(err => {
+                console.log(err)
+                res.json({ success: false, errorMessage: err })
+            })
+        } else {
+            res.json({ success: false, errorMessage: "Variable not valid" })
+        }
+    }
+})
+
 router.post('/user/update', imageUpload(imagePath.DATA_SET).array('images', 2), async (req, res) => {
     const userBody = req.body
     if (userBody.id) {
@@ -83,52 +129,6 @@ router.post('/user/update', imageUpload(imagePath.DATA_SET).array('images', 2), 
 
 
 })
-// router.post('/user', imageUpload(imagePath.DATA_SET).array('images', 2), async (req, res) => {
-router.post('/user', noneUpload.array('images', 2),async (req, res) => {
-    const userBody = req.body
-    const nama = userBody.nama
-    const telp = userBody.telp
-    const images = []
-    const files = req.files
-    if(files.length){
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const res = await uploadS3(file)
-            images.push(res.Key)
-        }
-        
-    }
-    const valid = await validateImage(images)
-    if (!valid) {
-        // await fs.rmSync(`./labeled_images/${userBody.code}`, { recursive: true, force: true });
-        res.json({ success: false, errorMessage: "Wajah Tidak terdeteksi pada gambar" })
-    } else {
-        if (nama && telp) {
-            await user.add({
-                nama,
-                telp,
-                images,
-                createdTm: new Date(),
-                modifiedTm: new Date()
-            }).then(async resp => {
-                //rename folder by id
-                // fs.rename(`./labeled_images/${userBody.code}`, `./labeled_images/${resp.id}`, err => {
-                //     if (err) {
-                //         console.log(err)
-                //     }
-                // })
-                // await user.doc(resp.id).update({ images: [`./labeled_images/${resp.id}/1.png`, `./labeled_images/${resp.id}/2.png`] })
-                res.json({ success: true, obj: {} })
-            }).catch(err => {
-                console.log(err)
-                res.json({ success: false, errorMessage: err })
-            })
-        } else {
-            res.json({ success: false, errorMessage: "Variable not valid" })
-        }
-    }
-})
-
 router.post('/user/validate', imageUpload(imagePath.ABSEN).single('image'), async (req, res) => {
     const body = req.body
     // Load the face detection models   

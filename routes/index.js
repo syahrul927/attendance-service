@@ -61,6 +61,8 @@ router.get('/images/absensi/*', function (req, res) {
     });
 });
 
+router.use(authenticateToken)
+router.use(imageRoute)
 
 export default router
 
