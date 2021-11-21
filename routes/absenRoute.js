@@ -44,7 +44,7 @@ router.post('/absen/check', noneUpload.single('file'), async (req, res) => {
                 suhu: body.suhu,
                 path: result.Key,
                 userId: data.id,
-                createdDate: new Date(),
+                createdDate: new Date(new Date().toLocaleString("en-us",{timeZone: "Asia/Jakarta"})),
                 nama: data.nama
             })
             res.json({

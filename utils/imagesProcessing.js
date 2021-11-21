@@ -54,14 +54,6 @@ await faceApi.nets.ssdMobilenetv1.loadFromDisk(path.join(__dirname, '../models')
 export const faceapi = faceApi
 export const canv = canvas
 
-const imageStorage = multer.diskStorage({
-  destination: 'images',
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + '_' + Date.now()
-      + path.extname(file.originalname))
-  }
-});
-
 const upload = (obj) => {
   return multer(obj)
 }

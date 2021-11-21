@@ -10,28 +10,6 @@ export const baseUrl = 'https://attendance-serviceku.herokuapp.com'
 const db = fb.firestore()
 const userDb = db.collection('tm_user')
 import path from 'path'
-// const loadLabeledImages = (listUser = []) => {
-//     const labels = listUser
-//     // console.log(`data dari db :${loadLabeledImages()}`)    
-//     return Promise.all(
-//         labels.map(async label => {
-//             const desc = []
-//             for (let i = 1; i <= 2; i++) {
-//                 const img = await canvas.loadImage(path.join(__dirname, `../labeled_images/${label}/${i}.png`))
-//                 const description = await faceApi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-//                 if (description) {
-//                     description.
-//                     desc.push(description.descriptor)
-//                 } else {
-//                     console.log(`desc : ${description}, label : ${label}`)
-//                 }
-
-//             }
-
-//             return new faceApi.LabeledFaceDescriptors(label, desc)
-//         })
-//     )
-// }
 const loadLabeledImages = (listUser = []) => {
     const labels = listUser
     return Promise.all(
@@ -51,23 +29,6 @@ const loadLabeledImages = (listUser = []) => {
         })
     )
 }
-//orisinil
-// export const validateImage = async (labels = []) => {
-//     let isValidate = true
-//     for (let i = 0; i < labels.length; i++) {
-//         const item = labels[i];  
-//         console.log('load image')
-//         const img = await canvas.loadImage(path.join(__dirname, `../${item}`))
-//         const description = await faceApi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-//         if (!description) {
-//             console.log(`face not detected ${description}`)
-//             isValidate = false
-//         }
-
-//     }
-//     return isValidate
-
-// }
 export const validateImage = async (labels = []) => {
     let isValidate = true
     for (let i = 0; i < labels.length; i++) {

@@ -58,13 +58,6 @@ router.post('/user', noneUpload.array('images', 2),async (req, res) => {
                 createdTm: new Date(),
                 modifiedTm: new Date()
             }).then(async resp => {
-                //rename folder by id
-                // fs.rename(`./labeled_images/${userBody.code}`, `./labeled_images/${resp.id}`, err => {
-                //     if (err) {
-                //         console.log(err)
-                //     }
-                // })
-                // await user.doc(resp.id).update({ images: [`./labeled_images/${resp.id}/1.png`, `./labeled_images/${resp.id}/2.png`] })
                 res.json({ success: true, obj: {} })
             }).catch(err => {
                 console.log(err)
@@ -184,7 +177,7 @@ router.get('/absensi', async (req, res) => {
 })
 const dateIndo = (date) => {
     if (date) {
-        const str = `${new String(date.getHours()).padStart(2, 0)}:${new String(date.getMinutes()).padStart(2, 0)}:${new String(date.getSeconds()).padStart(2, 0)} ${new String(date.getDay()).padStart(2, 0)}/${new String(date.getMonth() + 1).padStart(2, 0)}/${date.getFullYear()}`
+        const str = `${new String(date.getHours()).padStart(2, 0)}:${new String(date.getMinutes()).padStart(2, 0)}:${new String(date.getSeconds()).padStart(2, 0)} ${new String(date.getDate()).padStart(2, 0)}/${new String(date.getMonth() + 1).padStart(2, 0)}/${date.getFullYear()}`
         return str
     }
     return date
