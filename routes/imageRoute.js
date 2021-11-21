@@ -68,6 +68,17 @@ router.post('/user', noneUpload.array('images', 2),async (req, res) => {
         }
     }
 })
+router.post('/user/delete', async (req, res) => {
+    const body = req.body
+    if(body && body.id){
+        await user.doc(body.id).delete().then(() => {
+            return res.json({success:true})
+        }).catch(err => {
+            console.log(err)
+            return res.json({success:false, errorMessage:err})
+        })
+    }
+})
 
 router.post('/user/update', imageUpload(imagePath.DATA_SET).array('images', 2), async (req, res) => {
     const userBody = req.body
