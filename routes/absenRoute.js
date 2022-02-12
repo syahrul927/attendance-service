@@ -18,7 +18,13 @@ router.post('/absen/check', noneUpload.single('file'), async (req, res) => {
     // Load the face detection models   
     const image = await canvas.loadImage(`${baseUrl}/s3/image/${result.Key}`)
     const labeledFaceDescriptors = await labeledImagesFix
-    const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.5)
+    if(!labeledFaceDescriptors){
+        return res.status(500).json({
+            success:false,
+            errorMessage:"internal server error"
+        })
+    }
+    const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.7)
     const singleResult = await faceApi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
     let bestMatch = null
     if (singleResult) {

@@ -7,6 +7,7 @@ import fs from 'fs'
 import mime from 'mime'
 import { faceapi as faceApi, canv as canvas, imageUpload, noneUpload, uploadS3 } from '../utils/imagesProcessing.js'
 import { baseUrl, validateImage } from '../utils/labeledImage.js'
+import createCsv from '../utils/csvExportUtils.js'
 
 const router = express.Router()
 const db = fb.firestore()
@@ -24,6 +25,22 @@ router.get('/user', async (req, res) => {
         user.id = doc.id
         listUser.push(user)
     })
+    res.json({
+        "success": true,
+        "obj": listUser
+    })
+
+})
+
+router.get('/user/export', async (req, res) => {
+    const listUser = []
+    const userRef = await user.get()
+    userRef.forEach(doc => {
+        let user = doc.data()
+        user.id = doc.id
+        listUser.push(user)
+    })
+    await createCsv(listUser)
     res.json({
         "success": true,
         "obj": listUser

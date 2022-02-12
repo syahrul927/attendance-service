@@ -1,6 +1,6 @@
 import multer from 'multer'
 import path from 'path'
-import faceApi from 'face-api.js'
+import faceApi from '@vladmandic/face-api'
 import canvas from 'canvas'
 import '@tensorflow/tfjs-node'
 import fs from 'fs'
