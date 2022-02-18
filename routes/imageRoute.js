@@ -8,6 +8,7 @@ import mime from 'mime'
 import { faceapi as faceApi, canv as canvas, imageUpload, noneUpload, uploadS3 } from '../utils/imagesProcessing.js'
 import { baseUrl, validateImage } from '../utils/labeledImage.js'
 import createCsv from '../utils/csvExportUtils.js'
+import ImageDetection from '../constanta/ImageDetection.js'
 
 const router = express.Router()
 const db = fb.firestore()
@@ -155,7 +156,7 @@ router.post('/user/validate', noneUpload.single('image'), async (req, res) => {
     // Load the face detection models   
     const image = await canvas.loadImage(`${baseUrl}/s3/image/${result.Key}`)
     const labeledFaceDescriptors = await labeledImagesFix
-    const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.5)
+    const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, ImageDetection.PERCENTAGE)
     const singleResult = await faceApi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
     if(!singleResult){
         return res.status(401).json({
@@ -168,12 +169,14 @@ router.post('/user/validate', noneUpload.single('image'), async (req, res) => {
     }
     if(bestMatch){
         const id = bestMatch._label
+        const percentage = bestMatch.distance
         let data = null
         await user.doc(id).get()
         .then(doc => {
             if(doc.exists){
                 data = doc.data()
                 data.id = doc.id
+                data.distance = percentage
             }
         })
         res.json({

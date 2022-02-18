@@ -1,11 +1,13 @@
-
 import { faceapi as faceApi, canv as canvas } from '../utils/imagesProcessing.js'
+import env from 'dotenv'
+import BaseUrl from '../constanta/baseUrl.js'
+env.config()
 
 import fb from '../config/firebase.js'
 import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-export const baseUrl = 'https://attendance-serviceku.herokuapp.com'
+export const baseUrl = BaseUrl(process.env.ENVI).url
 
 const db = fb.firestore()
 const userDb = db.collection('tm_user')

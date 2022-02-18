@@ -6,6 +6,7 @@ const db = fb.firestore()
 import { fileURLToPath } from 'url'
 import { faceapi as faceApi, canv as canvas, imageUpload, noneUpload, uploadS3, downloadS3 } from '../utils/imagesProcessing.js'
 import { baseUrl } from "../utils/labeledImage.js"
+import ImageDetection from "../constanta/ImageDetection.js"
 const user = db.collection('tm_user')
 const router = express.Router()
 
@@ -24,7 +25,7 @@ router.post('/absen/check', noneUpload.single('file'), async (req, res) => {
             errorMessage:"internal server error"
         })
     }
-    const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, 0.7)
+    const faceMatcher = new faceApi.FaceMatcher(labeledFaceDescriptors, ImageDetection.PERCENTAGE)
     const singleResult = await faceApi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor()
     let bestMatch = null
     if (singleResult) {
