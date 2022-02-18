@@ -1,3 +1,3 @@
 export default {
-    PERCENTAGE:0.4
+    PERCENTAGE:0.45
 }
